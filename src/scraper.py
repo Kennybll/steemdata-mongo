@@ -330,13 +330,13 @@ def run():
     m = MongoStorage()
     m.ensure_indexes()
     with timeit():
-        # scrape_operations(m)
+        scrape_operations(m)
         scrape_comments(m)
-        # post_processing(m)
+        post_processing(m)
         # update_account(m, 'furion', load_extras=True)
         # update_account_ops(m, 'furion')
-        # scrape_all_users(m, False)
-        # validate_operations(m)
+        scrape_all_users(m, False)
+        validate_operations(m)
 
 
 if __name__ == '__main__':
