@@ -94,7 +94,7 @@ def scrape_comments(mongo, batch_size=250, max_workers=50):
         'permlink': 1,
     }
     results = list(mongo.Operations.find(query, projection=projection))
-    identifiers = set(x['author'] + "/" x['permlink'] for x in results)
+    identifiers = set(x['author'] + "/" + x['permlink'] for x in results)
 
     # handle an edge case when we are too close to the head,
     # and the batch contains no work to do
