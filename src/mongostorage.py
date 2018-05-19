@@ -109,11 +109,11 @@ class Indexer(object):
             self.instance = self.coll.find_one()
 
     def get_checkpoint(self, name):
-        field = f'{name}_checkpoint'
+        field = name + '_checkpoint'
         return self.instance.get(field, 1)
 
     def set_checkpoint(self, name, index):
-        field = f'{name}_checkpoint'
+        field = name + '_checkpoint'
         return self.coll.update_one({}, {"$set": {field: index}})
 
 
