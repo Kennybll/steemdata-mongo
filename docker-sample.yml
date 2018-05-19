@@ -1,5 +1,4 @@
 celery-worker:
-  autoredeploy: true
   command: celery worker -A tasks  -l info -c 1 -P solo
   environment:
     - 'CELERY_BACKEND_URL=redis://:not_real_password@redis'
@@ -14,8 +13,6 @@ celery-worker:
   mem_limit: 1094m
   restart: always
   sequential_deployment: true
-  tags:
-    - steemdata
   target_num_containers: 10
 mongodb:
   command: 'mongod --auth --storageEngine wiredTiger --wiredTigerEngineConfigString="cache_size=30GB"'
@@ -26,8 +23,6 @@ mongodb:
     - '28017:28017'
   privileged: true
   restart: always
-  tags:
-    - steemdata
   volumes:
     - '/mongo:/data/db'
     - '/mongo-backup:/mongo-backup'
@@ -39,11 +34,8 @@ redis:
   ports:
     - '6379:6379'
   restart: always
-  tags:
-    - steemdata
   tty: true
 worker-refresh-dbstats:
-  autoredeploy: true
   command: python __main__.py -w refresh_dbstats
   environment:
     - 'CELERY_BACKEND_URL=redis://:not_real_password@redis'
@@ -56,10 +48,7 @@ worker-refresh-dbstats:
     - mongodb
   mem_limit: 512m
   restart: always
-  tags:
-    - steemdata
 worker-scrape-all-users:
-  autoredeploy: true
   command: python __main__.py -w scrape_all_users
   environment:
     - 'CELERY_BACKEND_URL=redis://:not_real_password@redis'
@@ -72,10 +61,7 @@ worker-scrape-all-users:
     - mongodb
   mem_limit: 512m
   restart: always
-  tags:
-    - steemdata
 worker-scrape-operations:
-  autoredeploy: true
   command: python __main__.py -w scrape_operations
   environment:
     - 'CELERY_BACKEND_URL=redis://:not_real_password@redis'
@@ -86,10 +72,7 @@ worker-scrape-operations:
   image: 'furion/steemdata-mongo:latest'
   mem_limit: 1024m
   restart: always
-  tags:
-    - steemdata
 worker-scrape-prices:
-  autoredeploy: true
   command: python __main__.py -w scrape_prices
   environment:
     - 'CELERY_BACKEND_URL=redis://:not_real_password@redis'
@@ -102,8 +85,6 @@ worker-scrape-prices:
     - mongodb
   mem_limit: 512m
   restart: always
-  tags:
-    - steemdata
 worker-validate-operations:
   command: python __main__.py -w validate_operations
   environment:
@@ -117,5 +98,3 @@ worker-validate-operations:
     - mongodb
   mem_limit: 512m
   restart: always
-  tags:
-    - steemdata
