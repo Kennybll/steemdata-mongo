@@ -94,7 +94,7 @@ def scrape_comments(mongo, batch_size=250, max_workers=50):
         'permlink': 1,
     }
     results = list(mongo.Operations.find(query, projection=projection))
-    identifiers = set(f"{x['author']}/{x['permlink']}" for x in results)
+    identifiers = set(x['author'] + "/" x['permlink'] for x in results)
 
     # handle an edge case when we are too close to the head,
     # and the batch contains no work to do
@@ -116,7 +116,6 @@ def scrape_comments(mongo, batch_size=250, max_workers=50):
     comments = lfilter(lambda x: x['depth'] > 0, raw_comments)
 
     # Mongo upsert many
-    log_output = ''
     if posts:
         r = mongo.Posts.bulk_write(
             [UpdateOne({'identifier': x['identifier']},
@@ -125,8 +124,6 @@ def scrape_comments(mongo, batch_size=250, max_workers=50):
              for x in posts],
             ordered=False,
         )
-        log_output += \
-            f'(Posts: {r.upserted_count} upserted, {r.modified_count} modified) '
     if comments:
         r = mongo.Comments.bulk_write(
             [UpdateOne({'identifier': x['identifier']},
@@ -135,16 +132,11 @@ def scrape_comments(mongo, batch_size=250, max_workers=50):
              for x in comments],
             ordered=False,
         )
-        log_output += \
-            f'(Comments: {r.upserted_count} upserted, {r.modified_count} modified) '
 
     # We are only querying {type: 'comment'} blocks and sometimes
     # the gaps are larger than the batch_size.
     index = silent(max)(lpluck('block_num', results)) or (start_block + batch_size)
     indexer.set_checkpoint('comments', index)
-
-    log.info(f'Checkpoint: {index} {log_output}')
-
 
 # Accounts, AccountOperations
 # ---------------------------
